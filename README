@@ -1,0 +1,103 @@
+                  +----------------------+
+                  | User image annotator |
+                  +----------------------+
+
+A series of tools for annotating images using floodfill and indexed images.
+
+A first tool, called "contour_image_annotator",
+is made for annotating binary contour images.
+is particuarly handy for annotating
+images where the contour image has already been generated, for instance
+with an edge detector.
+It generates annotated images with a given prefix,
+by default "<input image>_user_illus.png"
+
+Another tool, called "user_image_annotator",
+is an extension of the "contour_image_annotator" for depth images:
+it first generates the contour image from the depth image using edge detection
+(namely, Canny filters).
+For instance, this tool can ease the annnotation of ground truth user positions
+in each frame of a data recording.
+It can use the RGB image for display.
+
+== Compiling ==
+
+You need to install OpenCV first.
+Then, the project is based on a CMakeLists.
+
+For Linux/Mac users, the classical sequence should work:
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make
+
+For Windows users, some instructions are available on OpenCV website:
+http://opencv.willowgarage.com/wiki/Getting_started .
+
+Two compiling options are available.
+Each of them is by default disabled and can be toggled, for instance,
+using "ccmake" instead of "cmake" and toggling it manually
+(cf "ccmake" manual).
+
+* USE_IMAGEMAGICK_FOR_16_COLORS_CONVERSION :
+  if TRUE, call ImageMagick "convert" utility
+  to transform the color space of the output PNGs
+  from RGB to 16 indexed colors.
+  This reduces the size of the output PNGs drastically but requires a longer time
+  to switch from one image to another.
+  REQUIRES: ImageMagick "convert" (http://www.imagemagick.org/ , available in repos)
+
+* USE_PCL_FOR_GROUND_PLANE:
+  if TRUE, use the Ransac implementation of the Point Cloud Library (PCL)
+  to estimate the equation of the ground plane in a depth image.
+  REQUIRES: PCL (http://pointclouds.org/ , available in repos)
+
+== Synopsis ==
+
+$ contour_image_annotator CONTOURIMAGES
+
+where CONTOURIMAGES is the list of binary contour images.
+
+$ user_image_annotator PREFIXIMAGES
+
+where PREFIXIMAGES is a file or list of files
+of depth images that can be accessed using a depth-to-uchar technique.
+If RGB images are available, they will be shown in the GUI.
+Note that "_depth.png" and "_rgb.png" are automatically
+removed from PREFIXIMAGES to obtain prefixes.
+
+== Keyboard shortcuts ==
+For both "contour_image_annotator" and "user_image_annotator":
+* 0 -> 9 keypad       select color 0 -> 9
+* 'p', BackSpace      go to previous image
+* 'n', Space          go to next image
+* 'c'                 clear user image
+* 'q', Esc            quit
+
+For "user_image_annotator", if USE_PCL_FOR_GROUND_PLANE:
+* 'g'                 compute ground plane using PCL
+
+== Example ==
+
+To annotate images where the contour images has already been generated
+by another method:
+$ contour_image_annotator contour*.png
+
+To generate contour images from coupled rgb+depth images and annotate them:
+$ user_image_annotator *rgb.png
+
+If we want to annotate the following files:
+  samples/sample1_depth.png
+  samples/sample1_depth_params.yaml
+  samples/sample1_rgb.png
+  samples/sample2_depth.png
+  samples/sample2_depth_params.yaml
+  samples/sample2_rgb.png
+$ user_image_annotator samples/*rgb.png
+
+
+== Samples ==
+
+Using the sample images given with the tools:
+$ contour_image_annotator ../samples/sample?.*
+$ user_image_annotator samples/*rgb.png

@@ -1,0 +1,12 @@
+/*!
+* \file postcard_scan_extractor_path.h.in
+* A CMake generated file for compiling otions
+* \date 11/2014
+* \author Arnaud Ramey
+*/
+#ifndef postcard_scan_extractor_PATH_H
+#define postcard_scan_extractor_PATH_H
+
+#define postcard_scan_extractor_PATH       "@PROJECT_SOURCE_DIR@/"
+
+#endif /* MAGGIEPTIONS_H_ */
