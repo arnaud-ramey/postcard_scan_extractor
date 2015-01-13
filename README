@@ -2,7 +2,9 @@
                   | postcard_scan_extractor |
                   +-------------------------+
 
-A simple OpenCV sample for extracting postcards from a scanned image.
+A Graphical User Interface for extracting postcards from a scanned image.
+It is made for being fast and handy.
+For instance, the extracted postcards can be rotated from the interface itself.
 
 License :                  see the LICENSE file.
 Authors :                  see the AUTHORS file.
