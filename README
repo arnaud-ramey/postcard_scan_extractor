@@ -15,3 +15,21 @@ ________________________________________________________________________________
 To display the help, just launch the program in a terminal.
 It will display the help of the program.
 
+Synopsis
+  postcard_scan_extractor INPUTFILES
+Description
+  INPUTFILES  can be any file read by OpenCV, notably JPEGs, PNGs, BMPs, etc.
+
+Keys:
+  MOUSE MOVE:             move cursor
+  UP, DOWN, LEFT, RIGHT:  precisely move cursor
+  LEFT CLICK, ENTER:      set current cursor position as center
+  '+':                    increase zoom level
+  '-':                    decrease zoom level
+  'p', BACKSPACE:         go to previous image
+  'n', SPACE:             go to next image
+  'r':                    rotate last postcard of 90°
+  'f','v':                flip last postcard vertically
+  'h':                    flip last postcard horizontally
+  'q', ESCAPE:            exit program
+

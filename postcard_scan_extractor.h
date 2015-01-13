@@ -29,10 +29,11 @@ ________________________________________________________________________________
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <stdio.h>
+#include <iostream>
 #include "postcard_scan_extractor_path.h"
 
-//#define DEBUG_PRINT(...)   {}
-#define DEBUG_PRINT(...)   printf(__VA_ARGS__)
+#define DEBUG_PRINT(...)   {}
+//#define DEBUG_PRINT(...)   printf(__VA_ARGS__)
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -67,7 +68,7 @@ inline double dist_L2(const _Pt2 & a, const _Pt2 & b) {
 class PostcardScanExtractor {
 public:
   static const unsigned int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600, MARGIN_SIZE = 10;
-  static const unsigned int ZOOM_WINDOW_SIZE  = 300;
+  static const unsigned int ZOOM_WINDOW_SIZE  = 200;
   static const double DEFAULT_ZOOM_LEVEL = 50;
 
   struct Line {
@@ -122,8 +123,31 @@ public:
 
   inline bool load_playlist_images(const std::vector<std::string> & playlist) {
     DEBUG_PRINT("load_playlist_images(%i images)\n", playlist.size());
-    if (playlist.empty()) {
-      printf("Cannot load an empty playlist! Exiting.\n");
+    bool contains_help = (std::find(playlist.begin(), playlist.end(), std::string("--help"))
+                          != playlist.end())
+        ||
+        (std::find(playlist.begin(), playlist.end(), std::string("-h"))
+         != playlist.end());
+    if (playlist.empty() || contains_help) {
+      // printf("Cannot load an empty playlist! Exiting.\n");
+      // print help
+      std::cout << "Synopsis" << std::endl
+                << "  postcard_scan_extractor INPUTFILES" << std::endl
+                << "Description" << std::endl
+                << "  INPUTFILES  can be any file read by OpenCV, notably JPEGs, PNGs, BMPs, etc." << std::endl
+                << std::endl
+                << "Keys:" << std::endl
+                << "  MOUSE MOVE:             move cursor" << std::endl
+                << "  UP, DOWN, LEFT, RIGHT:  precisely move cursor" << std::endl
+                << "  LEFT CLICK, ENTER:      set current cursor position as center" << std::endl
+                << "  '+':                    increase zoom level" << std::endl
+                << "  '-':                    decrease zoom level" << std::endl
+                << "  'p', BACKSPACE:         go to previous image" << std::endl
+                << "  'n', SPACE:             go to next image" << std::endl
+                << "  'r':                    rotate last postcard of 90°" << std::endl
+                << "  'f','v':                flip last postcard vertically" << std::endl
+                << "  'h':                    flip last postcard horizontally" << std::endl
+                << "  'q', ESCAPE:            exit program" << std::endl;
       quit();
     }
     _playlist = playlist;
@@ -144,7 +168,7 @@ public:
     if (playlist_idx < 0 || playlist_idx >= _playlist.size())
       return false;
     _playlist_idx = playlist_idx;
-    load_playlist_image(get_current_filename());
+    return load_playlist_image(get_current_filename());
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -265,8 +289,10 @@ protected:
   inline virtual bool load_playlist_image(const std::string & filename) {
     DEBUG_PRINT("load_playlist_image('%s')\n", filename.c_str());
     cv::Mat3b scan_img = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
-    if (scan_img.empty())
+    if (scan_img.empty()) {
+      printf("Could not read file '%s'!\n", filename.c_str());
       return false;
+    }
     return set_image(scan_img);
   }
   inline std::string get_current_filename() const {
