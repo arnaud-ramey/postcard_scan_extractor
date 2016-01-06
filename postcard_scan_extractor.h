@@ -241,13 +241,27 @@ protected:
   static void win_cb(int event, int x, int y, int flags, void* cookie) {
     // DEBUG_PRINT("win_cb(%i, %i): event:%i, flag:%i\n", x, y, event, flags);
     PostcardScanExtractor* this_cb = ((PostcardScanExtractor*) cookie);
-    if (event == CV_EVENT_LBUTTONDOWN)
+    if (event == CV_EVENT_LBUTTONDOWN) // do not move mouse if left click
       this_cb->add_corner(this_cb->_last_mouse_x, this_cb->_last_mouse_y);
-    else { // do not move mouse if left click
+    else {
+      if (this_cb->_gui_corners.size() == 2) { // only allow perpendicular third point
+        double x1 = this_cb->_gui_corners.front().x, y1 = this_cb->_gui_corners.front().y;
+        double x2 = this_cb->_gui_corners.back().x, y2 = this_cb->_gui_corners.back().y;
+        double a = x2 - x1, b = y2 - y1;
+        cv::Mat A = (cv::Mat_<double>(4,4)
+                     << b, 0, 1, 0,
+                     a, 0, 0, -1,
+                     0, a, -1, 0,
+                     0, b, 0, -1);
+        cv::Mat B = (cv::Mat_<double>(4,1) << x2, -y2, -x, -y);
+        cv::Mat AlphaBetaX3Y3 = A.inv() * B;
+        x = AlphaBetaX3Y3.at<double>(2);
+        y = AlphaBetaX3Y3.at<double>(3);
+      }
       this_cb->_last_mouse_x = x;
       this_cb->_last_mouse_y = y;
     }
-    if (event == CV_EVENT_RBUTTONDOWN) {
+    if (event == CV_EVENT_RBUTTONDOWN) { // clear on right button
       this_cb->_gui_corners.clear();
       this_cb->_hires_corners.clear();
     }
