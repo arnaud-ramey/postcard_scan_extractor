@@ -2,6 +2,8 @@
                   | postcard_scan_extractor |
                   +-------------------------+
 
+[![Build Status](https://travis-ci.org/arnaud-ramey/postcard_scan_extractor.svg)](https://travis-ci.org/arnaud-ramey/postcard_scan_extractor)
+
 A Graphical User Interface for extracting postcards from a scanned image.
 It is made for being fast and handy.
 For instance, the extracted postcards can be rotated from the interface itself.
